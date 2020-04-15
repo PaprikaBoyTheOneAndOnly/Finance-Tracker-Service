@@ -1,13 +1,31 @@
-package financeTracker.ch.model;
+package financeTracker.ch.pesrsistence;
 
+import financeTracker.ch.model.SpendingType;
+
+import javax.persistence.*;
 import java.time.LocalDate;
 
+@Entity
 public class Spending {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Column
     private double amount;
+    @Column
     private String description;
+    @Column
     private LocalDate date;
+    @Column
     private SpendingType type;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User creator;
+
+    public Spending() {
+        this(0, 0, "", null, SpendingType.SINGLE);
+    }
 
     public Spending(int id, double amount, String description, LocalDate date, SpendingType type) {
         this.id = id;
@@ -26,7 +44,7 @@ public class Spending {
     }
 
     public double getAmount() {
-        return amount;
+        return this.amount;
     }
 
     public void setAmount(double amount) {
@@ -34,7 +52,7 @@ public class Spending {
     }
 
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     public void setDescription(String description) {
@@ -42,7 +60,7 @@ public class Spending {
     }
 
     public LocalDate getDate() {
-        return date;
+        return this.date;
     }
 
     public void setDate(LocalDate date) {
@@ -50,10 +68,18 @@ public class Spending {
     }
 
     public SpendingType getType() {
-        return type;
+        return this.type;
     }
 
     public void setType(SpendingType type) {
         this.type = type;
+    }
+
+    public User getCreator() {
+        return this.creator;
+    }
+
+    public void setCreator(User creator) {
+        this.creator = creator;
     }
 }
