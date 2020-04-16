@@ -1,7 +1,6 @@
 package financeTracker.ch.service;
 
 import financeTracker.ch.model.RESTSpending;
-import financeTracker.ch.model.UserNotFoundException;
 import financeTracker.ch.pesrsistence.SpendingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,7 @@ public class SpendingService {
         this.spendingRepository = spendingRepository;
     }
 
-    public List<RESTSpending> getSpendingByUser(int userId) throws UserNotFoundException {
+    public List<RESTSpending> getSpendingByUser(int userId) {
         return this.spendingRepository.findByUserId(userId).stream()
                 .map(RESTSpending::new)
                 .collect(Collectors.toList());

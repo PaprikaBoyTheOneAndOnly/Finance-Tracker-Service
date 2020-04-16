@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS user (
 );
 
 INSERT INTO user (id, email, password)
-VALUES (1, 'janhasler01@gmail.com', 'd466e05250328f42bafabde35a89edb20b7450e3446c4f5f6ae700f46ad86c69'),
+VALUES (1, 'janhasler01@gmail.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92'),
        (2, 'jeremy.senn20801@gmail.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92')
        ON DUPLICATE KEY UPDATE id = id;
 
@@ -33,4 +33,3 @@ VALUES (1, 1, 'Salt bill', -30, '2020-02-10', 1),
        (9, 2, 'Cinema', -19.90, '2020-04-10', 0),
        (10, 2, 'Pizza', -19.90, '2020-04-10', 0)
 ON DUPLICATE KEY UPDATE id = id;
-
