@@ -4,15 +4,30 @@ import java.util.Objects;
 
 public class Token {
     private String value;
+    private int userId;
 
     public Token() {
+        this("", 0);
     }
 
     public Token(String value) {
-        if(value.contains("Bearer")) {
+        this(value, 0);
+    }
+
+    public Token(String value, int userId) {
+        if (value.contains("Bearer")) {
             value = value.replace("Bearer ", "");
         }
         this.value = value;
+        this.userId = userId;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public String getValue() {
