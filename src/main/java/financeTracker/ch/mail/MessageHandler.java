@@ -116,8 +116,8 @@ public class MessageHandler implements MessageCountListener {
     }
 
     private String extractEmail(String from) {
-        return from.contains(">") ?
-                from.substring(from.indexOf(">") + 1).trim() :
+        return from.contains("<") ?
+                from.substring(from.indexOf("<") + 1, from.indexOf(">")).trim() :
                 from;
     }
 
