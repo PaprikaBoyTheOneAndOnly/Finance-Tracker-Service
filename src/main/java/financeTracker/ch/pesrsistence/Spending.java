@@ -29,6 +29,10 @@ public class Spending {
         this(0, 0, "", null, SpendingType.SINGLE);
     }
 
+    public Spending(double amount, String description, LocalDate date, SpendingType type) {
+        this(0, amount, description, date, type);
+    }
+
     public Spending(int id, double amount, String description, LocalDate date, SpendingType type) {
         this.id = id;
         this.amount = amount;
