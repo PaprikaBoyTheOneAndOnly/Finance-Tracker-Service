@@ -81,7 +81,7 @@ public class MessageHandlerTest {
 
     @Test
     public void testMessageAdded_emailHasName() {
-        when(mockAddress.toString()).thenReturn("<Peter Parker> peter@gmail.com");
+        when(mockAddress.toString()).thenReturn("Peter Parker <peter@gmail.com>");
 
         this.testee.messagesAdded(this.mockMessageCountEvent);
 
