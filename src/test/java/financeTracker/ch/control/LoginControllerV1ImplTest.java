@@ -21,7 +21,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -47,7 +46,6 @@ public class LoginControllerV1ImplTest {
                         .content(mapper.writeValueAsString(new Credentials("Peter", "12345")));
 
         this.mockMvc.perform(post)
-                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string(equalTo(expectedTokenString)));
     }
@@ -60,7 +58,6 @@ public class LoginControllerV1ImplTest {
                         .content(mapper.writeValueAsString(new Credentials("Peter", "12345")));
 
         this.mockMvc.perform(post)
-                .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
 
@@ -71,7 +68,6 @@ public class LoginControllerV1ImplTest {
 
         this.mockMvc.perform(delete("/login")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer iAmAToken"))
-                .andDo(print())
                 .andExpect(status().isOk());
     }
 
@@ -82,7 +78,6 @@ public class LoginControllerV1ImplTest {
 
         this.mockMvc.perform(delete("/login")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer iAmAToken"))
-                .andDo(print())
                 .andExpect(status().isNotFound());
     }
 }

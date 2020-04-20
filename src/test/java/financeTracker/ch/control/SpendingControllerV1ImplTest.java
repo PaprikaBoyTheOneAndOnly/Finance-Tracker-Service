@@ -31,6 +31,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -63,7 +64,6 @@ public class SpendingControllerV1ImplTest {
 
         this.mockMvc.perform(get("/spendings?userId=1")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer iAmAToken"))
-                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string(equalTo(expectedSpendingsString)));
     }
@@ -72,7 +72,6 @@ public class SpendingControllerV1ImplTest {
     public void testGetSpendingsByUserId_noUserIdGiven() throws Exception {
         this.mockMvc.perform(get("/spendings")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer iAmAToken"))
-                .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(status().reason(equalTo("Required int parameter 'userId' is not present")));
     }
@@ -80,7 +79,6 @@ public class SpendingControllerV1ImplTest {
     @Test
     public void testGetSpendingsByUserId_notLoggedIn() throws Exception {
         this.mockMvc.perform(get("/spendings"))
-                .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
 
