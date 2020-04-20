@@ -9,7 +9,7 @@ public class RESTSpending {
     private Spending spending;
 
     public RESTSpending() {
-        this.spending = new Spending();
+        this(new Spending());
     }
 
     public RESTSpending(Spending spending) {
