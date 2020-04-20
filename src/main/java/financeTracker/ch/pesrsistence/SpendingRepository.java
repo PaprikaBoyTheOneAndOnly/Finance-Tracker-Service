@@ -19,7 +19,4 @@ public interface SpendingRepository extends CrudRepository<Spending, Integer> {
     @Query(value = "DELETE FROM Spending s WHERE s.id = :id")
     int deleteSpendingById(@Param("id") int id);
 
-    @Modifying
-    @Query(value = "UPDATE Spending s SET s = :spending where s.id = :#{spending.id}")
-    int updateSpending(@Param("spending") Spending spending);
 }

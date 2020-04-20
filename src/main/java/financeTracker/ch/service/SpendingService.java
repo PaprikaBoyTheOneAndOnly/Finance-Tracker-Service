@@ -29,9 +29,9 @@ public class SpendingService {
         return this.spendingRepository.deleteSpendingById(id);
     }
 
-    public int updateSpending(RESTSpending rs) {
+    public RESTSpending updateSpending(RESTSpending rs) {
         Spending spending = new Spending(rs.getId(), rs.getAmount(), rs.getDescription(), rs.parsedDate(), rs.getType());
-        return this.spendingRepository.updateSpending(spending);
+        return new RESTSpending(this.spendingRepository.save(spending));
     }
 
     public RESTSpending insertSpending(RESTSpending rs) {

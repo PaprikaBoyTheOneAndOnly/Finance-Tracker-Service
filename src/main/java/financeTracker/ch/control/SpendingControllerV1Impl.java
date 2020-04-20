@@ -35,8 +35,8 @@ public class SpendingControllerV1Impl implements SpendingController {
 
     @Override
     public ResponseEntity<RESTSpending> updateSpending(RESTSpending rs) {
-        int updated = this.spendingService.updateSpending(rs);
-        return (updated == 1? ResponseEntity.noContent(): ResponseEntity.unprocessableEntity()).build();
+        RESTSpending updated = this.spendingService.updateSpending(rs);
+        return ResponseEntity.ok(updated);
     }
 
     @Override
