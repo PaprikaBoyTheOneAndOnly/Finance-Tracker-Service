@@ -14,12 +14,12 @@ public interface SpendingController {
     @GetMapping(produces = APPLICATION_JSON_VALUE)
     ResponseEntity<List<RESTSpending>> loadSpendings(@RequestParam int userId);
 
-    @DeleteMapping(path = "/{id}")
+    @DeleteMapping(path = "/{id}", produces = APPLICATION_JSON_VALUE)
     ResponseEntity<Integer> deleteSpending(@PathVariable int id);
 
-    @PutMapping(path = "/")
-    ResponseEntity<RESTSpending> updateSpending(@Valid @RequestBody RESTSpending spending);
+    @PutMapping(path = "/", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    ResponseEntity<RESTSpending> updateSpending(@RequestBody RESTSpending spending);
 
-    @PostMapping(path = "/")
+    @PostMapping(path = "/", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<RESTSpending> insertSpending(@RequestBody RESTSpending newSpending);
 }

@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@ApplicationScope
 public class SpendingService {
     private final SpendingRepository spendingRepository;
 
@@ -31,12 +30,12 @@ public class SpendingService {
     }
 
     public int updateSpending(RESTSpending rs) {
-        Spending spending = new Spending(rs.getId(), rs.getAmount(), rs.getDescription(), rs.getDate(), rs.getType());
+        Spending spending = new Spending(rs.getId(), rs.getAmount(), rs.getDescription(), rs.parsedDate(), rs.getType());
         return this.spendingRepository.updateSpending(spending);
     }
 
     public RESTSpending insertSpending(RESTSpending rs) {
-        Spending newSpending = new Spending(rs.getId(), rs.getAmount(), rs.getDescription(), rs.getDate(), rs.getType());
+        Spending newSpending = new Spending(rs.getId(), rs.getAmount(), rs.getDescription(), rs.parsedDate(), rs.getType());
         Spending s = this.spendingRepository.save(newSpending);
         return new RESTSpending(s);
     }

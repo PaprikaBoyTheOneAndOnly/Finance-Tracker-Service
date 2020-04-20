@@ -2,10 +2,15 @@ package financeTracker.ch.model;
 
 import financeTracker.ch.pesrsistence.Spending;
 
-import java.time.LocalDate;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 
 public class RESTSpending {
     private Spending spending;
+
+    public RESTSpending() {
+        this.spending = new Spending();
+    }
 
     public RESTSpending(Spending spending) {
         this.spending = spending;
@@ -35,12 +40,20 @@ public class RESTSpending {
         this.spending.setDescription(description);
     }
 
-    public LocalDate getDate() {
-        return this.spending.getDate();
+    public String getDate() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        return formatter.format(LocalDateTime.of(this.spending.getDate(), LocalTime.of(1,0)));
     }
 
-    public void setDate(LocalDate date) {
-        this.spending.setDate(date);
+    public void setDate(String date) {
+        Instant instant = Instant.parse(date);
+        this.spending.setDate(LocalDateTime
+                .ofInstant(instant, ZoneId.systemDefault())
+                .toLocalDate());
+    }
+
+    public LocalDate parsedDate() {
+        return this.spending.getDate();
     }
 
     public SpendingType getType() {
