@@ -1,5 +1,6 @@
 package financeTracker.ch.mail;
 
+import financeTracker.ch.model.MailType;
 import financeTracker.ch.model.SpendingType;
 import financeTracker.ch.pesrsistence.Spending;
 import financeTracker.ch.pesrsistence.SpendingRepository;
@@ -48,14 +49,15 @@ public class MessageHandler implements MessageCountListener {
                 if (user.isPresent()) {
                     if (this.saveNewSpending(message, user.get())) {
                         this.mailSenderService.sendEmail(email,
-                                "Your spending was added to your list.");
+                                "Your spending was added to your list.", MailType.SUCCESS);
                     }
                 } else {
                     this.logger.info("[MessageHandler] User not available!");
                     this.mailSenderService.sendEmail(email,
                             "No account could be found for ["
                                     + email
-                                    + "]!\nPlease create an account first to add a spending to your list.");
+                                    + "]!\nPlease create an account first to add a spending to your list.",
+                            MailType.INFORMATION);
                 }
             } catch (IOException | MessagingException e) {
                 this.logger.error(e.getMessage());
@@ -76,10 +78,10 @@ public class MessageHandler implements MessageCountListener {
             return true;
         } catch (UnsupportedMessageFormatException e) {
             this.logger.error("[MessageHandler] Error while reading message content!");
-            this.logger.error(e.getMessage());
+            this.logger.error("[MessageHandler] " + e.getMessage());
             this.mailSenderService.sendEmail(user.getEmail(),
-                    "An error occurred while adding a spending to your list!\n" +
-                            e.getMessage());
+                    "An error occurred while adding a spending to your list:\n" +
+                            e.getMessage(), MailType.ERROR);
             return false;
         }
     }
