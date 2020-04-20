@@ -11,4 +11,7 @@ import java.util.Optional;
 public interface UserRepository extends CrudRepository<User, Integer> {
     @Query(value = "SELECT u FROM User u WHERE u.email = :email AND u.password = :password")
     Optional<User> findByCredentials(@Param("email") String email, @Param("password") String password);
+
+    @Query(value = "SELECT u FROM User u WHERE u.email = :email")
+    Optional<User> findByEmail(@Param("email") String email);
 }
