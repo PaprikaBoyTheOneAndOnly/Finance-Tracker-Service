@@ -34,7 +34,7 @@ public class AuthenticationService {
                 .findByCredentials(credentials.getEmail(), this.getHash(credentials.getPassword()));
 
         if (user.isPresent()) {
-            Token token = new Token(UUID.randomUUID().toString());
+            Token token = new Token(UUID.randomUUID().toString(), user.get().getId());
             this.signInUsers.put(token, user.get());
             return Optional.of(token);
         }
