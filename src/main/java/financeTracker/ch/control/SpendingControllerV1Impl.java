@@ -1,13 +1,19 @@
 package financeTracker.ch.control;
 
 import financeTracker.ch.model.RESTSpending;
+import financeTracker.ch.pesrsistence.Spending;
 import financeTracker.ch.service.SpendingService;
+import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.annotation.RequestScope;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RequestScope
