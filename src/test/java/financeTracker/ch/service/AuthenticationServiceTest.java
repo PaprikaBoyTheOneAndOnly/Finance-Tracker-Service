@@ -70,7 +70,7 @@ public class AuthenticationServiceTest {
                 .thenReturn(Optional.of(new User(1, "Peter@gmail.com", basicPass123456, new ArrayList<>())));
         Optional<Token> token = this.authenticationService.authenticateUser(new Credentials("Peter@gmail.com", "123456"));
 
-        if(token.isPresent()) {
+        if (token.isPresent()) {
             Optional<User> user = this.authenticationService.checkAuthToken(token.get());
             assertThat(user.isPresent(), is(true));
             assertThat(user.get().getEmail(), is("Peter@gmail.com"));
@@ -92,13 +92,17 @@ public class AuthenticationServiceTest {
                 .thenReturn(Optional.of(mockedUser));
         Optional<Token> token = this.authenticationService.authenticateUser(new Credentials("Peter@gmail.com", "123456"));
 
-        if(token.isPresent()) {
-            this.authenticationService.logoutUser(new Token("iAmNotKnown"));
-            this.authenticationService.logoutUser(token.get());
+        if (token.isPresent()) {
+            assertThat(this.authenticationService.logoutUser(token.get()), is(true));
             Map<Token, User> users = this.authenticationService.getSignInUsers();
             assertThat(users, not(IsMapContaining.hasEntry(token.get(), mockedUser)));
         } else {
             fail("Token is empty!");
         }
+    }
+
+    @Test
+    public void testLogoutUser_userWasNotLoggedIn() {
+        assertThat(this.authenticationService.logoutUser(new Token("iAmNotKnown")), is(false));
     }
 }

@@ -65,10 +65,24 @@ public class LoginControllerV1ImplTest {
     }
 
     @Test
-    public void testDeleteLogout() throws Exception {
+    public void testDeleteLogin() throws Exception {
+        when(mockAuthenticationService.logoutUser(any(Token.class)))
+                .thenReturn(true);
+
         this.mockMvc.perform(delete("/login")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer iAmAToken"))
                 .andDo(print())
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testDeleteLogin_userWasNotLoggedIn() throws Exception {
+        when(mockAuthenticationService.logoutUser(any(Token.class)))
+                .thenReturn(false);
+
+        this.mockMvc.perform(delete("/login")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer iAmAToken"))
+                .andDo(print())
+                .andExpect(status().isNotFound());
     }
 }

@@ -31,7 +31,9 @@ public class LoginControllerV1Impl implements LoginController {
 
     @Override
     public ResponseEntity logout(String token) {
-        this.authenticationService.logoutUser(new Token(token));
-        return ResponseEntity.ok().build();
+        if(this.authenticationService.logoutUser(new Token(token))) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 }
