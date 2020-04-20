@@ -6,6 +6,7 @@ import financeTracker.ch.pesrsistence.SpendingRepository;
 import financeTracker.ch.pesrsistence.UserRepository;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PreDestroy;
@@ -14,6 +15,9 @@ import java.util.Properties;
 
 @Service
 public class MailReceiverService {
+    @Value( "${mail.password}" )
+    private String password;
+
     private final Logger logger;
     private final UserRepository userRepository;
     private final SpendingRepository spendingRepository;
@@ -33,14 +37,14 @@ public class MailReceiverService {
         this.mailSenderService = mailSenderService;
 
         Properties props = System.getProperties();
-        props.setProperty("mail.store.protocol", "imaps");
-        props.setProperty("mail.imap.port", "993");
-        props.setProperty("mail.imap.connectiontimeout", "5000");
-        props.setProperty("mail.imap.timeout", "5000");
-        Session session = Session.getInstance(props, null);
+        props.put("mail.store.protocol", "imaps");
+        props.put("mail.imaps.ssl.enable", true);
+        props.put("mail.imaps.port", 993);
+        props.put("mail.imaps.timeout", 5000);
+        Session session = Session.getDefaultInstance(props);
 
         try {
-            this.store = session.getStore();
+            this.store = session.getStore("imaps");
         } catch (NoSuchProviderException e) {
             this.logger.error(e.getMessage());
         }
@@ -48,22 +52,34 @@ public class MailReceiverService {
 
     public void start() {
         try {
-            this.logger.info("[MailService] Trying go connect!");
-            this.store.connect("imap.gmail.com", "fnctracker@gmail.com", "JGvOzn0UlKqaGRnLQ1ek");
-            this.logger.info("[MailService] Connected!");
 
-            Folder inbox = store.getFolder("Inbox");
-            inbox.open(Folder.READ_ONLY);
-            inbox.addMessageCountListener(new MessageHandler(
-                    this.userRepository,
-                    this.spendingRepository,
-                    this.mailSenderService));
+            for (int tries = 0; tries < 10; tries++) {
+                try {
+                    this.logger.info("[MailReceiverService] Trying go connect! (" + (tries + 1) + ")");
+                    this.store.connect("imap.gmail.com", "fnctracker@gmail.com", password);
+                    break;
+                } catch (MessagingException ignored) {
+                }
+            }
 
-            IdleThread idleThread = new IdleThread(inbox);
-            idleThread.setDaemon(false);
-            idleThread.start();
-            idleThread.join();
-            this.idleThread = idleThread;
+            if (store.isConnected()) {
+                this.logger.info("[MailReceiverService] Connected!");
+
+                Folder inbox = store.getFolder("Inbox");
+                inbox.open(Folder.READ_ONLY);
+                inbox.addMessageCountListener(new MessageHandler(
+                        this.userRepository,
+                        this.spendingRepository,
+                        this.mailSenderService));
+
+                IdleThread idleThread = new IdleThread(inbox);
+                idleThread.setDaemon(false);
+                idleThread.start();
+                idleThread.join();
+                this.idleThread = idleThread;
+            } else {
+                this.logger.error("[MailReceiverService] Failed to connect!");
+            }
         } catch (MessagingException | InterruptedException e) {
             this.logger.error(e.getMessage());
         }

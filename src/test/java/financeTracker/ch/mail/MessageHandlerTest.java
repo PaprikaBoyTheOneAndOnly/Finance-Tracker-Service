@@ -1,5 +1,6 @@
 package financeTracker.ch.mail;
 
+import financeTracker.ch.model.MailType;
 import financeTracker.ch.model.SpendingType;
 import financeTracker.ch.pesrsistence.Spending;
 import financeTracker.ch.pesrsistence.SpendingRepository;
@@ -26,8 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.*;
 
-
-@ActiveProfiles("Test")
+@ActiveProfiles("MailMocked")
 @ExtendWith(MockitoExtension.class)
 public class MessageHandlerTest {
     private MessageHandler testee;
@@ -70,7 +70,7 @@ public class MessageHandlerTest {
         ArgumentCaptor<Spending> spendingCaptor = ArgumentCaptor.forClass(Spending.class);
         verify(this.mockSpendingRepository, times(1)).save(spendingCaptor.capture());
         verify(this.mockMailSenderService, times(1))
-                .sendEmail("peter@gmail.com", "Your spending was added to your list.");
+                .sendEmail("peter@gmail.com", "Your spending was added to your list.", MailType.SUCCESS);
 
         Spending addedSpending = spendingCaptor.getValue();
         assertThat(addedSpending.getAmount(), is(-12.5));
@@ -96,7 +96,7 @@ public class MessageHandlerTest {
 
         verify(this.mockMailSenderService, times(1))
                 .sendEmail("peter@gmail.com", "No account could be found for [peter@gmail.com]!" +
-                        "\nPlease create an account first to add a spending to your list.");
+                        "\nPlease create an account first to add a spending to your list.", MailType.INFORMATION);
     }
 
     @Test
@@ -146,7 +146,8 @@ public class MessageHandlerTest {
 
         verify(this.mockMailSenderService, times(1))
                 .sendEmail("peter@gmail.com",
-                        "An error occurred while adding a spending to your list!\nAmount is not defined!");
+                        "An error occurred while adding a spending to your list:\nAmount is not defined!",
+                        MailType.ERROR);
     }
 
     @Test
@@ -157,7 +158,8 @@ public class MessageHandlerTest {
 
         verify(this.mockMailSenderService, times(1))
                 .sendEmail("peter@gmail.com",
-                        "An error occurred while adding a spending to your list!\nAmount has has wrong format!");
+                        "An error occurred while adding a spending to your list:\nAmount has has wrong format!",
+                        MailType.ERROR);
     }
 
     @Test
@@ -168,6 +170,7 @@ public class MessageHandlerTest {
 
         verify(this.mockMailSenderService, times(1))
                 .sendEmail("peter@gmail.com",
-                        "An error occurred while adding a spending to your list!\nAmount has has wrong format!");
+                        "An error occurred while adding a spending to your list:\nAmount has has wrong format!",
+                        MailType.ERROR);
     }
 }
