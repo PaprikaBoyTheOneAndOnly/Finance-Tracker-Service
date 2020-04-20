@@ -30,8 +30,13 @@ public class SecurityInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        Optional<User> user = authenticationService.checkAuthToken(new Token(token));
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        return user.isPresent();
+        Optional<User> user = this.authenticationService.checkAuthToken(new Token(token));
+        if (user.isPresent()) {
+            response.setStatus(HttpStatus.OK.value());
+            return true;
+        } else {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            return false;
+        }
     }
 }

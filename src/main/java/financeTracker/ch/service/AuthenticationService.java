@@ -46,8 +46,12 @@ public class AuthenticationService {
         return Optional.ofNullable(this.signInUsers.get(token));
     }
 
-    public void logoutUser(Token token) {
-        this.signInUsers.remove(token);
+    public boolean logoutUser(Token token) {
+        if(this.signInUsers.containsKey(token)) {
+            this.signInUsers.remove(token);
+            return true;
+        }
+        return false;
     }
 
     private String getHash(String inStr) {
