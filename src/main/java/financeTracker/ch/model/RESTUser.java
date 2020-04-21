@@ -5,6 +5,10 @@ import financeTracker.ch.pesrsistence.User;
 public class RESTUser {
     private User user;
 
+    public RESTUser() {
+        this(new User());
+    }
+
     public RESTUser(User user) {
         this.user = user;
     }

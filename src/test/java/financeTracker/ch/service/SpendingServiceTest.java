@@ -40,6 +40,18 @@ public class SpendingServiceTest {
         assertThat(this.spendingService.getSpendingByUser(0).isEmpty(), is(true));
         verify(this.mockSpendingRepository, times(1)).findByUserId(anyInt());
     }
+
+    @Test
+    public void testDeleteSpending() {
+        when(mockSpendingRepository.deleteSpendingById(anyInt())).thenReturn(1);
+        assertThat(this.spendingService.deleteSpending(1), is(1));
+    }
+
+    @Test
+    public void testDeleteSpending_invalidId() {
+        when(mockSpendingRepository.deleteSpendingById(anyInt())).thenReturn(0);
+        assertThat(this.spendingService.deleteSpending(1), is(0));
+    }
 }
 
 
