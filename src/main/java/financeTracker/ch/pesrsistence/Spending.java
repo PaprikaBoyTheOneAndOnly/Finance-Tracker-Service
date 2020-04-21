@@ -1,7 +1,5 @@
 package financeTracker.ch.pesrsistence;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonValue;
 import financeTracker.ch.model.SpendingType;
 
 import javax.persistence.*;

@@ -4,7 +4,6 @@ import financeTracker.ch.model.RESTSpending;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -17,9 +16,9 @@ public interface SpendingController {
     @DeleteMapping(path = "/{id}", produces = APPLICATION_JSON_VALUE)
     ResponseEntity<Integer> deleteSpending(@PathVariable int id);
 
-    @PutMapping(path = "/", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @PutMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<RESTSpending> updateSpending(@RequestBody RESTSpending spending);
 
-    @PostMapping(path = "/", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<RESTSpending> insertSpending(@RequestBody RESTSpending newSpending);
 }

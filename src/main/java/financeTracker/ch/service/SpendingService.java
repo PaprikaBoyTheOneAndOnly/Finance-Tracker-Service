@@ -5,7 +5,6 @@ import financeTracker.ch.pesrsistence.Spending;
 import financeTracker.ch.pesrsistence.SpendingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.annotation.ApplicationScope;
 
 import java.util.List;
 import java.util.stream.Collectors;

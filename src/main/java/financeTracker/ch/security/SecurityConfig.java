@@ -24,7 +24,7 @@ public class SecurityConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(this.securityInterceptor)
-                .addPathPatterns("/spendings");
+                .addPathPatterns("/spendings/**");
     }
 
     @Bean
