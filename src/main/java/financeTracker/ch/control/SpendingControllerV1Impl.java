@@ -35,7 +35,6 @@ public class SpendingControllerV1Impl implements SpendingController {
     @Override
     public ResponseEntity<Integer> deleteSpending(@PathVariable int id) {
         int deleted = this.spendingService.deleteSpending(id);
-        System.out.println("deleted = " + deleted);
         return (deleted == 1? ResponseEntity.ok() : ResponseEntity.status(404)).build();
     }
 
