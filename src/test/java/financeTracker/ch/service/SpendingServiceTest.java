@@ -1,15 +1,21 @@
 package financeTracker.ch.service;
 
+import financeTracker.ch.model.RESTSpending;
+import financeTracker.ch.model.SpendingType;
+import financeTracker.ch.model.Token;
 import financeTracker.ch.pesrsistence.Spending;
 import financeTracker.ch.pesrsistence.SpendingRepository;
+import financeTracker.ch.pesrsistence.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -22,6 +28,8 @@ public class SpendingServiceTest {
     private SpendingService spendingService;
     @MockBean
     private SpendingRepository mockSpendingRepository;
+    @MockBean
+    private AuthenticationService authService;
 
     @Test
     public void testGetSpendingsByUser() {
@@ -52,6 +60,18 @@ public class SpendingServiceTest {
         when(mockSpendingRepository.deleteSpendingById(anyInt())).thenReturn(0);
         assertThat(this.spendingService.deleteSpending(1), is(0));
     }
+
+//    @Test
+//    public void testInsertSpending() {
+//        Spending mockSpending = new Spending(10.0, "Some Description", LocalDate.now(), SpendingType.SINGLE);
+//
+//        RESTSpending mockInput = new RESTSpending(mockSpending);
+//        User mockUser = new User();
+//        when (this.authService.checkAuthToken(any(Token.class))).thenReturn(Optional.of(mockUser));
+//        mockSpending.setCreator(mockUser);
+//
+//        assertThat(this.spendingService.insertSpending(mockInput, new Token("Bearer iAmAToken")), is());
+//    }
 }
 
 

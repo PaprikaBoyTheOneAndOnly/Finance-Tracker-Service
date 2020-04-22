@@ -86,4 +86,16 @@ public class Spending {
     public void setCreator(User creator) {
         this.creator = creator;
     }
+
+    @Override
+    public String toString() {
+        return "Spending{" +
+                "id=" + id +
+                ", amount=" + amount +
+                ", description='" + description + '\'' +
+                ", date=" + date +
+                ", type=" + type +
+                ", creator=" + creator +
+                '}';
+    }
 }

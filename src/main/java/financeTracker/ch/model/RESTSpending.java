@@ -63,4 +63,9 @@ public class RESTSpending {
     public void setType(SpendingType type) {
         this.spending.setType(type);
     }
+
+    @Override
+    public String toString() {
+        return this.spending.toString();
+    }
 }

@@ -5,6 +5,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -18,8 +19,8 @@ public interface SpendingController {
     ResponseEntity<Integer> deleteSpending(@PathVariable int id);
 
     @PutMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<RESTSpending> updateSpending(@RequestBody RESTSpending spending);
+    ResponseEntity<RESTSpending> updateSpending(@RequestBody RESTSpending spending, HttpServletRequest request);
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<RESTSpending> insertSpending(@RequestBody RESTSpending newSpending);
+    ResponseEntity<RESTSpending> insertSpending(@RequestBody RESTSpending newSpending, HttpServletRequest request);
 }

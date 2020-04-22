@@ -20,6 +20,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -111,7 +113,7 @@ public class SpendingControllerV1ImplTest {
         mockSpending.setId(10);
         String expectedSpendingString = this.mapper.writeValueAsString(mockSpending);
 
-        when(this.mockSpendingService.insertSpending(any(RESTSpending.class))).thenReturn(mockSpending);
+        when(this.mockSpendingService.insertSpending(any(RESTSpending.class), any(Token.class))).thenReturn(mockSpending);
 
         this.mockMvc.perform(post("/spendings/")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -125,7 +127,7 @@ public class SpendingControllerV1ImplTest {
     public void testInsertSpending_notLoggedIn() throws Exception {
         RESTSpending mockSpending = new RESTSpending(new Spending(0, 12.50, "its a description", LocalDate.now(), SpendingType.SINGLE));
         String inputSpendingString = this.mapper.writeValueAsString(mockSpending);
-        when(this.mockSpendingService.insertSpending(any(RESTSpending.class))).thenReturn(mockSpending);
+        when(this.mockSpendingService.insertSpending(any(RESTSpending.class), any(Token.class))).thenReturn(mockSpending);
 
         // No Auth-Header given
         this.mockMvc.perform(post("/spendings/")
@@ -139,7 +141,7 @@ public class SpendingControllerV1ImplTest {
         RESTSpending mockSpending = new RESTSpending(new Spending(1, 12.50, "better updated spending", LocalDate.now(), SpendingType.SINGLE));
         String inputSpendingString = this.mapper.writeValueAsString(mockSpending);
 
-        when(this.mockSpendingService.updateSpending(any(RESTSpending.class))).thenReturn(mockSpending);
+        when(this.mockSpendingService.updateSpending(any(RESTSpending.class), any(Token.class))).thenReturn(mockSpending);
 
         this.mockMvc.perform(put("/spendings/")
                 .contentType(MediaType.APPLICATION_JSON)
