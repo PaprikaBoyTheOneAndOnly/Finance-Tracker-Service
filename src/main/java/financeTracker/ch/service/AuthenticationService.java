@@ -18,9 +18,9 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.time.Instant;
+import java.time.temporal.TemporalAmount;
+import java.util.*;
 
 @Component
 @ApplicationScope
@@ -95,9 +95,14 @@ public class AuthenticationService {
     }
 
     private String generateNewJWToken(int userId) {
+        Calendar date = Calendar.getInstance();
+        long t = date.getTimeInMillis();
+        Date expirationDate = new Date(t + (20 * 6000)); // minutes * one-minute-in-millis
+
         return Jwts.builder()
                 .setIssuer("http://localhost")
                 .claim("userId", userId)
+                .setExpiration(expirationDate)
                 .signWith(this.key, SignatureAlgorithm.HS256)
                 .compact();
     }
