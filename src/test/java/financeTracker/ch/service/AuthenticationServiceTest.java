@@ -4,6 +4,9 @@ import financeTracker.ch.model.Credentials;
 import financeTracker.ch.model.Token;
 import financeTracker.ch.pesrsistence.User;
 import financeTracker.ch.pesrsistence.UserRepository;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.hamcrest.collection.IsMapContaining;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +25,7 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -86,6 +92,23 @@ public class AuthenticationServiceTest {
     }
 
     @Test
+    public void testCheckAuthToken_tokenHasWrongFormat() {
+        when(this.mockUserRepository.findByCredentials(anyString(), anyString()))
+                .thenReturn(Optional.of(new User(1, "Peter@gmail.com", basicPass123456, new ArrayList<>())));
+
+        String token = Jwts.builder()
+                .signWith(new SecretKeySpec(
+                        // basicPass because a sha-256 encoded string is needed
+                        this.basicPass123456.getBytes(StandardCharsets.UTF_8),
+                        SignatureAlgorithm.HS256.getJcaName()
+                ), SignatureAlgorithm.HS256)
+                .compact();
+
+            Optional<User> user = this.authenticationService.checkAuthToken(new Token(token));
+            assertThat(user.isPresent(), is(false));
+    }
+
+    @Test
     public void testLogoutUser() {
         User mockedUser = new User(1, "Peter@gmail.com", basicPass123456, new ArrayList<>());
         when(this.mockUserRepository.findByCredentials(anyString(), anyString()))
@@ -104,5 +127,25 @@ public class AuthenticationServiceTest {
     @Test
     public void testLogoutUser_userWasNotLoggedIn() {
         assertThat(this.authenticationService.logoutUser(new Token("iAmNotKnown")), is(false));
+    }
+
+    @Test
+    public void extractUserId() {
+        when(this.mockUserRepository.findByCredentials(anyString(), anyString()))
+                .thenReturn(Optional.of(new User(1, "Peter@gmail.com", basicPass123456, new ArrayList<>())));
+        Optional<Token> token = this.authenticationService.authenticateUser(new Credentials("Peter@gmail.com", "123456"));
+
+        if (token.isPresent()) {
+            assertThat(this.authenticationService.extractUserId(token.get().getValue()), is(1));
+        } else {
+            fail("Token is empty!");
+        }
+    }
+
+    @Test
+    public void extractUserId_wrongToken() {
+        assertThrows(JwtException.class, () -> {
+            this.authenticationService.extractUserId("iAmAWrongToken");
+        });
     }
 }

@@ -36,7 +36,7 @@ public class LoginControllerV1ImplTest {
 
     @Test
     public void testPostLogin() throws Exception {
-        Token mockToken = new Token("iAmAToken", 0);
+        Token mockToken = new Token("iAmAToken");
         String expectedTokenString = this.mapper.writeValueAsString(mockToken);
         when(mockAuthenticationService.authenticateUser(any(Credentials.class))).
                 thenReturn(Optional.of(mockToken));

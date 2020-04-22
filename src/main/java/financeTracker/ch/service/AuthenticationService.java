@@ -4,21 +4,31 @@ import financeTracker.ch.model.Credentials;
 import financeTracker.ch.model.Token;
 import financeTracker.ch.pesrsistence.User;
 import financeTracker.ch.pesrsistence.UserRepository;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.ApplicationScope;
 
+import javax.annotation.PostConstruct;
+import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 @Component
 @ApplicationScope
 public class AuthenticationService {
+    @Value("${security.key}")
+    private String securityKey;
+    private Key key;
+
     private final UserRepository userRepository;
 
     private Map<Token, User> signInUsers;
@@ -29,12 +39,20 @@ public class AuthenticationService {
         this.signInUsers = new HashMap<>();
     }
 
+    @PostConstruct
+    private void setUp() {
+        this.key = new SecretKeySpec(
+                getHash(securityKey).getBytes(StandardCharsets.UTF_8),
+                SignatureAlgorithm.HS256.getJcaName()
+        );
+    }
+
     public Optional<Token> authenticateUser(Credentials credentials) {
         Optional<User> user = this.userRepository
                 .findByCredentials(credentials.getEmail(), this.getHash(credentials.getPassword()));
 
         if (user.isPresent()) {
-            Token token = new Token(UUID.randomUUID().toString(), user.get().getId());
+            Token token = new Token(this.generateNewJWToken(user.get().getId()));
             this.signInUsers.put(token, user.get());
             return Optional.of(token);
         }
@@ -43,15 +61,45 @@ public class AuthenticationService {
     }
 
     public Optional<User> checkAuthToken(Token token) {
+        try {
+            this.extractUserId(token.getValue());
+        } catch (JwtException e) {
+            return Optional.empty();
+        }
         return Optional.ofNullable(this.signInUsers.get(token));
     }
 
     public boolean logoutUser(Token token) {
-        if(this.signInUsers.containsKey(token)) {
+        if (this.signInUsers.containsKey(token)) {
             this.signInUsers.remove(token);
             return true;
         }
         return false;
+    }
+
+    public Map<Token, User> getSignInUsers() {
+        return signInUsers;
+    }
+
+    public void setSignInUsers(Map<Token, User> signInUsers) {
+        this.signInUsers = signInUsers;
+    }
+
+    public Integer extractUserId(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("userId", Integer.class);
+    }
+
+    private String generateNewJWToken(int userId) {
+        return Jwts.builder()
+                .setIssuer("http://localhost")
+                .claim("userId", userId)
+                .signWith(this.key, SignatureAlgorithm.HS256)
+                .compact();
     }
 
     private String getHash(String inStr) {
@@ -71,13 +119,5 @@ public class AuthenticationService {
         }
 
         return hexString.toString();
-    }
-
-    public Map<Token, User> getSignInUsers() {
-        return signInUsers;
-    }
-
-    public void setSignInUsers(Map<Token, User> signInUsers) {
-        this.signInUsers = signInUsers;
     }
 }
