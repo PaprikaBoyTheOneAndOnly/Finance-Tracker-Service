@@ -1,6 +1,5 @@
 package financeTracker.ch.control;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import financeTracker.ch.model.RESTSpending;
 import financeTracker.ch.model.SpendingType;
@@ -31,8 +30,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -63,18 +60,19 @@ public class SpendingControllerV1ImplTest {
 
         when(this.mockSpendingService.getSpendingByUser(anyInt())).thenReturn(mockSpendings);
 
-        this.mockMvc.perform(get("/spendings?userId=1")
+        this.mockMvc.perform(get("/spendings")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer iAmAToken"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(equalTo(expectedSpendingsString)));
     }
 
     @Test
-    public void testGetSpendingsByUserId_noUserIdGiven() throws Exception {
+    public void testGetSpendingsByUserId_noUserIdGivenInHeader() throws Exception {
+        when(authenticationService.checkAuthToken(any(Token.class))).thenReturn(Optional.empty());
+
         this.mockMvc.perform(get("/spendings")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer iAmAToken"))
-                .andExpect(status().isBadRequest())
-                .andExpect(status().reason(equalTo("Required int parameter 'userId' is not present")));
+                .header(HttpHeaders.AUTHORIZATION, "Bearer iAmAWrongToken"))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
