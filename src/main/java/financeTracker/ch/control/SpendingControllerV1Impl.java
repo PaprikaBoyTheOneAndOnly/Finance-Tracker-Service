@@ -5,13 +5,11 @@ import financeTracker.ch.model.Token;
 import financeTracker.ch.service.AuthenticationService;
 import financeTracker.ch.service.SpendingService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.annotation.RequestScope;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RequestScope
@@ -40,19 +38,15 @@ public class SpendingControllerV1Impl implements SpendingController {
     }
 
     @Override
-    public ResponseEntity<RESTSpending> updateSpending(RESTSpending rs, HttpServletRequest request) {
-        System.out.println("rs = " + rs);
-        String tokenString = request.getHeader(HttpHeaders.AUTHORIZATION);
-        Token userToken = new Token(tokenString);
+    public ResponseEntity<RESTSpending> updateSpending(RESTSpending rs, String token) {
+        Token userToken = new Token(token);
         RESTSpending updated = this.spendingService.updateSpending(rs, userToken);
         return ResponseEntity.ok(updated);
     }
 
     @Override
-    public ResponseEntity<RESTSpending> insertSpending(RESTSpending rs, HttpServletRequest request) {
-        System.out.println("rs = " + rs);
-        String tokenString = request.getHeader(HttpHeaders.AUTHORIZATION);
-        Token userToken = new Token(tokenString);
+    public ResponseEntity<RESTSpending> insertSpending(RESTSpending rs, String token) {
+        Token userToken = new Token(token);
         RESTSpending insertedSpending = this.spendingService.insertSpending(rs, userToken);
         return ResponseEntity.ok(insertedSpending);
     }

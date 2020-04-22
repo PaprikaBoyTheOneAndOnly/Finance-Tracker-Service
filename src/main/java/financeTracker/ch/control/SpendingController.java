@@ -19,8 +19,8 @@ public interface SpendingController {
     ResponseEntity<Integer> deleteSpending(@PathVariable int id);
 
     @PutMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<RESTSpending> updateSpending(@RequestBody RESTSpending spending, HttpServletRequest request);
+    ResponseEntity<RESTSpending> updateSpending(@RequestBody RESTSpending spending, @RequestHeader(value = HttpHeaders.AUTHORIZATION) String token);
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<RESTSpending> insertSpending(@RequestBody RESTSpending newSpending, HttpServletRequest request);
+    ResponseEntity<RESTSpending> insertSpending(@RequestBody RESTSpending newSpending, @RequestHeader(value = HttpHeaders.AUTHORIZATION) String token);
 }
