@@ -28,7 +28,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ActiveProfiles("MailMocked")
@@ -167,4 +168,32 @@ public class AuthenticationServiceTest {
             this.authenticationService.extractUserId("iAmAWrongToken");
         });
     }
+
+    @Test
+    public void registerUser() {
+        Credentials mockCredentials = new Credentials("valid.email@gmail.com", basicPass123456);
+        User mockUser = new User(10, "valid.email@gmail.com", basicPass123456, null);
+        when(this.mockUserRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+        when(this.mockUserRepository.save(any(User.class))).thenReturn(mockUser);
+
+        Optional<Token> token = this.authenticationService.registerUser(mockCredentials);
+
+        assertThat(token.isPresent(), is(true));
+        assertThat(this.authenticationService.getSignInUsers().size(), is(1));
+        assertThat(this.authenticationService.getSignInUsers().get(token.get()).getId(), is(10));
+
+    }
+
+    @Test
+    public void registerUser_emailAlreadyExists() {
+        Credentials mockCredentials = new Credentials("invalid.email@gmail.com", basicPass123456);
+        when(this.mockUserRepository.findByEmail(anyString())).thenReturn(Optional.of(new User()));
+
+        Optional<Token> token = this.authenticationService.registerUser(mockCredentials);
+
+        assertThat(token.isPresent(), is(false));
+        assertThat(this.authenticationService.getSignInUsers().size(), is(0));
+
+    }
+
 }

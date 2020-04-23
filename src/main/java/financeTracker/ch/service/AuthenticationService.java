@@ -2,6 +2,7 @@ package financeTracker.ch.service;
 
 import financeTracker.ch.model.Credentials;
 import financeTracker.ch.model.Token;
+import financeTracker.ch.pesrsistence.Spending;
 import financeTracker.ch.pesrsistence.User;
 import financeTracker.ch.pesrsistence.UserRepository;
 import io.jsonwebtoken.JwtException;
@@ -14,6 +15,7 @@ import org.springframework.web.context.annotation.ApplicationScope;
 
 import javax.annotation.PostConstruct;
 import javax.crypto.spec.SecretKeySpec;
+import javax.swing.text.html.Option;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.MessageDigest;
@@ -44,6 +46,20 @@ public class AuthenticationService {
                 getHash(securityKey).getBytes(StandardCharsets.UTF_8),
                 SignatureAlgorithm.HS256.getJcaName()
         );
+    }
+
+    public Optional<Token> registerUser(Credentials credentials) {
+        boolean credentialsExist = this.userRepository.findByEmail(credentials.getEmail()).isPresent();
+        if (!credentialsExist) {
+            User newUser = new User(credentials.getEmail(), this.getHash(credentials.getPassword()));
+            newUser = this.userRepository.save(newUser);
+            System.out.println("inserted.getId() = " + newUser.getId());
+            String tokenString = this.generateNewJWToken(newUser.getId());
+            Token token = new Token(tokenString);
+            this.signInUsers.put(token, newUser);
+            return Optional.of(token);
+        }
+        return Optional.empty();
     }
 
     public Optional<Token> authenticateUser(Credentials credentials) {

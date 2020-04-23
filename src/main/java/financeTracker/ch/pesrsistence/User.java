@@ -28,6 +28,13 @@ public class User {
         this.spendings = spendings;
     }
 
+    public User(String email, String password) {
+        this.id = 0;
+        this.email = email;
+        this.password = password;
+        this.spendings = new ArrayList<Spending>();
+    }
+
     public int getId() {
         return id;
     }

@@ -24,14 +24,22 @@ public class LoginControllerV1Impl implements LoginController {
     @Override
     public ResponseEntity<Token> login(Credentials credentials) {
         Optional<Token> token = this.authenticationService.authenticateUser(credentials);
-        return token.isPresent()?
-                ResponseEntity.ok(token.get()):
+        return token.isPresent() ?
+                ResponseEntity.ok(token.get()) :
                 ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     @Override
+    public ResponseEntity<Token> register(Credentials credentials) {
+        Optional<Token> token = this.authenticationService.registerUser(credentials);
+        return token.isPresent() ?
+                ResponseEntity.ok(token.get()) :
+                ResponseEntity.status(HttpStatus.CONFLICT).build();
+    }
+
+    @Override
     public ResponseEntity logout(String token) {
-        if(this.authenticationService.logoutUser(new Token(token))) {
+        if (this.authenticationService.logoutUser(new Token(token))) {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

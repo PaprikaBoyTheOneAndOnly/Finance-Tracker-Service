@@ -1,5 +1,6 @@
 package financeTracker.ch.control;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import financeTracker.ch.model.Credentials;
 import financeTracker.ch.model.Token;
@@ -19,8 +20,7 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -79,5 +79,27 @@ public class LoginControllerV1ImplTest {
         this.mockMvc.perform(delete("/login")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer iAmAToken"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testRegister() throws Exception {
+        Token mockToken = new Token("iAmaToken");
+        when(this.mockAuthenticationService.registerUser(any(Credentials.class))).thenReturn(Optional.of(mockToken));
+
+        this.mockMvc.perform(put("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(new Credentials("test.test@gmail.com", "password"))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(equalTo(mapper.writeValueAsString(mockToken))));
+
+    }
+
+    @Test
+    public void testRegister_EmailAlreadyExists() throws Exception {
+        when(this.mockAuthenticationService.registerUser(any(Credentials.class))).thenReturn(Optional.empty());
+        this.mockMvc.perform(put("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(new Credentials("already.exists@gmail.com", "password"))))
+                .andExpect(status().isConflict());
     }
 }

@@ -13,6 +13,9 @@ public interface LoginController {
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     ResponseEntity<Token> login(@RequestBody Credentials credentials);
 
+    @PutMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    ResponseEntity<Token> register(@RequestBody Credentials credentials);
+
     @DeleteMapping()
     ResponseEntity logout(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token);
 }
