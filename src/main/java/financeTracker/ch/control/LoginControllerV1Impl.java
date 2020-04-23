@@ -38,10 +38,8 @@ public class LoginControllerV1Impl implements LoginController {
     }
 
     @Override
-    public ResponseEntity logout(String token) {
-        if (this.authenticationService.logoutUser(new Token(token))) {
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    public ResponseEntity<Integer> logout(String token) {
+        boolean success = this.authenticationService.logoutUser(new Token(token));
+        return (success ? ResponseEntity.ok() : ResponseEntity.status(HttpStatus.NOT_FOUND)).build();
     }
 }
