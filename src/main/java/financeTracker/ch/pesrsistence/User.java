@@ -21,18 +21,15 @@ public class User {
         this(0, "", "", new ArrayList<>());
     }
 
+    public User(String email, String password) {
+        this(0, email, password, new ArrayList<>());
+    }
+
     public User(int id, String email, String password, List<Spending> spendings) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.spendings = spendings;
-    }
-
-    public User(String email, String password) {
-        this.id = 0;
-        this.email = email;
-        this.password = password;
-        this.spendings = new ArrayList<Spending>();
     }
 
     public int getId() {

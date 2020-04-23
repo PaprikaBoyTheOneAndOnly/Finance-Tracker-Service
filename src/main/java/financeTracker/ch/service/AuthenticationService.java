@@ -51,11 +51,11 @@ public class AuthenticationService {
     public Optional<Token> registerUser(Credentials credentials) {
         boolean credentialsExist = this.userRepository.findByEmail(credentials.getEmail()).isPresent();
         if (!credentialsExist) {
-            User newUser = new User(credentials.getEmail(), this.getHash(credentials.getPassword()));
-            newUser = this.userRepository.save(newUser);
-            System.out.println("inserted.getId() = " + newUser.getId());
-            String tokenString = this.generateNewJWToken(newUser.getId());
-            Token token = new Token(tokenString);
+            User newUser = this.userRepository.save(new User(
+                    credentials.getEmail(),
+                    this.getHash(credentials.getPassword())
+            ));
+            Token token = new Token(this.generateNewJWToken(newUser.getId()));
             this.signInUsers.put(token, newUser);
             return Optional.of(token);
         }
