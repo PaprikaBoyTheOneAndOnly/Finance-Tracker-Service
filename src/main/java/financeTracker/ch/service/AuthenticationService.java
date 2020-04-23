@@ -18,9 +18,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.Instant;
-import java.time.temporal.TemporalAmount;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @ApplicationScope
@@ -53,6 +52,9 @@ public class AuthenticationService {
 
         if (user.isPresent()) {
             Token token = new Token(this.generateNewJWToken(user.get().getId()));
+            this.signInUsers = this.signInUsers.entrySet().stream()
+                    .filter(entry -> !(entry.getValue().getId() == user.get().getId()))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
             this.signInUsers.put(token, user.get());
             return Optional.of(token);
         }

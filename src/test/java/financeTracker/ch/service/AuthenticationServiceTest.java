@@ -23,11 +23,12 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @ActiveProfiles("MailMocked")
@@ -56,6 +57,24 @@ public class AuthenticationServiceTest {
         Map<Token, User> users = this.authenticationService.getSignInUsers();
         assertThat(users.size(), is(1));
         assertThat(users.get(token.get()).getEmail(), is("Peter@gmail.com"));
+    }
+
+    @Test
+    public void testAuthenticateUser_userReauthenticate() throws InterruptedException {
+        when(this.mockUserRepository.findByCredentials(anyString(), anyString()))
+                .thenReturn(Optional.of(new User(1, "Peter@gmail.com", basicPass123456, new ArrayList<>())));
+
+        Optional<Token> token1 = this.authenticationService.authenticateUser(new Credentials("Peter@gmail.com", "123456"));
+        assertThat(token1.isPresent(), is(true));
+
+        Thread.sleep(1000); //to verify the expiration date set in the token is not the same
+
+        Optional<Token> token2 = this.authenticationService.authenticateUser(new Credentials("Peter@gmail.com", "123456"));
+        assertThat(token2.isPresent(), is(true));
+
+        Map<Token, User> users = this.authenticationService.getSignInUsers();
+        assertThat(users.get(token1.get()), is(nullValue()));
+        assertThat(users.get(token2.get()), is(not(nullValue())));
     }
 
     @Test
@@ -104,8 +123,8 @@ public class AuthenticationServiceTest {
                 ), SignatureAlgorithm.HS256)
                 .compact();
 
-            Optional<User> user = this.authenticationService.checkAuthToken(new Token(token));
-            assertThat(user.isPresent(), is(false));
+        Optional<User> user = this.authenticationService.checkAuthToken(new Token(token));
+        assertThat(user.isPresent(), is(false));
     }
 
     @Test
