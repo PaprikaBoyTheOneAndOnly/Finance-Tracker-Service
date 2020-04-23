@@ -115,7 +115,7 @@ public class AuthenticationService {
     private String generateNewJWToken(int userId) {
         Calendar date = Calendar.getInstance();
         long t = date.getTimeInMillis();
-        Date expirationDate = new Date(t + (20 * 6000)); // minutes * one-minute-in-millis
+        Date expirationDate = new Date(t + (20 * 60000)); // minutes * one-minute-in-millis
 
         return Jwts.builder()
                 .setIssuer("http://localhost")
