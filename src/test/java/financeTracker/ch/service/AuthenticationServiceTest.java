@@ -17,10 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -116,12 +113,15 @@ public class AuthenticationServiceTest {
         when(this.mockUserRepository.findByCredentials(anyString(), anyString()))
                 .thenReturn(Optional.of(new User(1, "Peter@gmail.com", basicPass123456, new ArrayList<>())));
 
+        Date expirationDate = new Date(Calendar.getInstance().getTimeInMillis() + (20 * 6000)); // minutes * one-minute-in-millis
+
         String token = Jwts.builder()
                 .signWith(new SecretKeySpec(
                         // basicPass because a sha-256 encoded string is needed
                         this.basicPass123456.getBytes(StandardCharsets.UTF_8),
                         SignatureAlgorithm.HS256.getJcaName()
                 ), SignatureAlgorithm.HS256)
+                .setExpiration(expirationDate)
                 .compact();
 
         Optional<User> user = this.authenticationService.checkAuthToken(new Token(token));
